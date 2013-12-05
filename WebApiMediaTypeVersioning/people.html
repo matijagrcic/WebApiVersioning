@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+
+    <div id="people-v1-template"></div>
+    <hr />
+    <div id="people-v2-template"></div>
+
+    <script src="Scripts/jquery-1.10.2.min.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+    <script src="Scripts/handlebars-v1.1.2.js"></script>
+
+    <script id="people-v1-script-template" type="text/x-handlebars-template">
+        <div class="container">
+            <h1>People V1 <span class="badge">application/vnd.yournamespace.yourresource.v1+json</span></h1>
+            <table class="table table-bordered table-hover table-striped table-responsive">
+                <thead>
+                <th>Id</th>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Full name</th>
+                <th>Url</th>
+                </thead>
+                <tbody>
+                    <!--{{#people}}-->
+                    <tr>
+                        <td>{{id}}</td>
+                        <td>{{firstName}}</td>
+                        <td>{{lastName}}</td>
+                        <td>{{fullName}}</td>
+                        <td><a href="{{url}}">{{url}}</a></td>
+                    </tr>
+                    <!--{{/people}}-->
+                </tbody>
+            </table>
+        </div>
+    </script>
+
+    <script id="people-v2-script-template" type="text/x-handlebars-template">
+        <div class="container">
+            <h1>People V2 <span class="badge">application/vnd.yournamespace.yourresource.v2+json</span></h1>
+            <table class="table table-bordered table-hover table-striped table-responsive">
+                <thead>
+                <th>Id</th>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Full name</th>
+                <th>Telephone</th>
+                <th>Mobile</th>
+                <th>Website</th>
+                <th>Url</th>
+                </thead>
+                <tbody>
+                    {{#people}}
+                    <tr>
+                        <td>{{id}}</td>
+                        <td>{{firstName}}</td>
+                        <td>{{lastName}}</td>
+                        <td>{{fullName}}</td>
+                        <td>{{telephone}}</td>
+                        <td>{{mobile}}</td>
+                        <td>{{website}}</td>
+                        <td><a href="{{url}}">{{url}}</a></td>
+                    </tr>
+                    {{/people}}
+                </tbody>
+            </table>
+        </div>
+    </script>
+
+    <script type="text/javascript">
+        (function (webApiVersioning, $, undefined) {
+
+            var fillTemplate = function (data, scriptDiv, containerDiv) {
+                var source = $('#' + scriptDiv).html();
+                var template = Handlebars.compile(source);
+                $('#' + containerDiv).html(template(data));
+            }
+            var createAjaxRequest = function (url, acceptHeader, scriptDiv, containerDiv) {
+                $.ajax({
+                    url: url,
+                    headers: {
+                        Accept: acceptHeader
+                    },
+                    dataType: "json",
+                    cache: false
+                }).success(function (data) {
+                    fillTemplate(data, scriptDiv, containerDiv);
+                });
+            }
+            createAjaxRequest("api/people/",
+                "application/vnd.yournamespace.yourresource.v1+json",
+                "people-v1-script-template",
+                "people-v1-template");
+
+            createAjaxRequest("api/people/",
+             "application/vnd.yournamespace.yourresource.v2+json",
+             "people-v2-script-template",
+             "people-v2-template");
+
+        }(window.webApiVersioning = window.webApiVersioning || {}, jQuery, Handlebars));
+    </script>
+</body>
+</html>
